@@ -1,1 +1,1 @@
-merge 2
+merge 2 4git commit -am"appended content to merge.txt"
