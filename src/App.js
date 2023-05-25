@@ -1,8 +1,7 @@
-import logo from "./logo.svg";
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Axios from "axios";
-import Login from "./Login";
+import Login from "./Authentication/Login";
 
 function App() {
   const [headerText, setHeaderText] = useState("Welcome");
@@ -11,7 +10,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div>{headerText}</div>
-        <Login set={setHeaderText}>WhatHowdoesThisWork</Login>
+        <Login set={setHeaderText}></Login>
       </header>
     </div>
   );
