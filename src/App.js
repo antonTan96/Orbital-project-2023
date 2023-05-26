@@ -2,16 +2,9 @@ import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
 import Axios from "axios";
-//import spawn from "child_process";
-//import express from "express";
 
 function App() {
   const [backendNumber, setNum] = useState(0);
-//  const { spawn } = require("child_process");
-//  const express = require('express');
-//  const pythonAPI = spawn('python3', ['./backend/app.py']);
-//  const app = express();
-
   const getNum = async () => {
     //const response = await Axios.get("http://localhost:5000/getNum");
     const response = await Axios.get('http://localhost:8080/');
