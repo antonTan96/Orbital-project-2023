@@ -1,4 +1,5 @@
 *.pyc
-*.env
+*.env*
 */node_modules
 */config.py
+*.crt.*
