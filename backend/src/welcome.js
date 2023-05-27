@@ -1,3 +1,3 @@
-export function welcome(sucess) {
-  return sucess("Welcome to backend API!");
+export async function welcome(response) {
+  return response(200, "Welcome to backend API!");
 }
