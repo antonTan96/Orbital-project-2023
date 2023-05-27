@@ -40,5 +40,5 @@ app.post("/register", async (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Backend API Listening on Port ${port}`)
+  console.log(`Backend API Listening on Port ${port}`);
 });
