@@ -6,26 +6,27 @@ import { login } from "./src/login.js";
 const app = express();
 const port = 8080;
 
-const success = message => {
-  return {"status" : "success", "message" : message};
+const success = (message) => {
+  return { status: "success", message: message };
 };
 
-const failed = message => {
-  return {"status" : "failed", "message" : message};
+const failed = (message) => {
+  return { status: "failed", message: message };
 };
 
 app.use(cors());
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send(welcome(success));
 });
 
-app.get("/login", (req, res) => {
+app.post("/login", (req, res) => {
   const inputs = req.body;
+  console.log(inputs);
   res.json(login(inputs, success, failed));
 });
 
-
 app.listen(port, () => {
-  console.log(`Backend API Listening on Port ${port}`)
+  console.log(`Backend API Listening on Port ${port}`);
 });

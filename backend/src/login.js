@@ -1,6 +1,6 @@
 export function login(inputs, success, failed) {
-	try {
-	if (inputs == undefined) {
+  try {
+    if (inputs == undefined) {
       return failed("Inputs cannot be emptied!");
     }
     if (!("username" in inputs)) {
@@ -9,9 +9,9 @@ export function login(inputs, success, failed) {
     if (!("password" in inputs)) {
       return failed("Password field is not present!");
     }
-    return success("");
-	} catch (Error) {
-		console.log(Error);
-		return failed("Internal Server Error!");
-	}
+    return success("Pass?");
+  } catch (Error) {
+    console.log(Error);
+    return failed("Internal Server Error!");
+  }
 }

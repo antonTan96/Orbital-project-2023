@@ -1,6 +1,5 @@
 import "./App.css";
-import { useState } from "react";
-import Axios from "axios";
+import { useEffect, useState } from "react";
 
 import Login from "./Authentication/Login";
 
@@ -12,19 +11,10 @@ function App() {
 
   //  const { spawn } = require("child_process");
   //  const express = require('express');
-  //  const pythonAPI = spawn('python3', ['./backend/app.py']);
+  //const { spawn } = require("node:child_process");
+
+  //const pythonAPI = spawn("python3", ["./backend/app.py"]);
   //  const app = express();
-  /*
-  const getNum = async () => {
-    //const response = await Axios.get("http://localhost:5000/getCredentials");
-    const response = await Axios.get('http://localhost:8080/');
-    console.log(response.data);
-    
-  };
-  useEffect(() => {
-    getCredentials();
-  }, []);
-  */
 
   return (
     <div className="App">
