@@ -68,4 +68,4 @@ jobs:
           app-name: "RememberTheMilk"
           slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1AA3D8E81B8648DEB79C5C064402B7EB }}
-          package: ./frontend/release.zip
+          package: .
