@@ -1,11 +1,12 @@
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { welcome } from "./src/welcome.js";
 import { login } from "./src/login.js";
 import { register } from "./src/register.js";
 
+dotenv.config();
 const app = express();
-const port = 8080;
 
 const response = (code, message) => {
   return {"status" : code, "message" : message};
@@ -39,6 +40,6 @@ app.post("/register", async (req, res) => {
   }
 })
 
-app.listen(port, () => {
-  console.log(`Backend API Listening on Port ${port}`);
+app.listen(process.env.BE_PORT, () => {
+  console.log(`Backend API Listening on Port ${process.env.BE_PORT}`);
 });
