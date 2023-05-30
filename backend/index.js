@@ -4,12 +4,13 @@ import cors from "cors";
 import { welcome } from "./src/welcome.js";
 import { login } from "./src/login.js";
 import { register } from "./src/register.js";
+import { task } from "./src/sampleTask.js";
 
 dotenv.config();
 const app = express();
 
 const response = (code, message) => {
-  return {"status" : code, "message" : message};
+  return { status: code, message: message };
 };
 
 app.use(cors());
@@ -17,6 +18,11 @@ app.use(express.json());
 
 app.get("/", async (req, res) => {
   const output = await welcome(response);
+  await res.status(output["status"]).send(output["message"]);
+});
+
+app.get("/getCurrent", async (req, res) => {
+  const output = task;
   await res.status(output["status"]).send(output["message"]);
 });
 
@@ -38,7 +44,7 @@ app.post("/register", async (req, res) => {
     console.log(error);
     await res.status(500).send("Internal Server Error!");
   }
-})
+});
 
 app.listen(process.env.BE_PORT, () => {
   console.log(`Backend API Listening on Port ${process.env.BE_PORT}`);

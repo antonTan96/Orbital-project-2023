@@ -14,8 +14,10 @@ function SwitchRegister({ setHeader }) {
       e
     );
     console.log(response);
+    const username = e.Username;
+
     if (response.status == 200) {
-      navigate("/Menu");
+      navigate(`/${username}/Menu`, { state: { login: true } });
     }
   };
   const saveCredentials = async (e) => {
@@ -49,6 +51,7 @@ function SwitchRegister({ setHeader }) {
     const formData = new FormData(form);
     //fetch('/some-api', { method: form.method, body: formData });
     const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
 
     if (formJson.pass == formJson.Password) {
       saveCredentials(formJson);
@@ -75,6 +78,12 @@ function SwitchRegister({ setHeader }) {
           <label>
             Password Again :
             <input type="text" name="pass" />
+          </label>
+        </div>
+        <div>
+          <label>
+            Start date:
+            <input type="date" name="deadline" />
           </label>
         </div>
         <input type="Submit" value="Submit" />
