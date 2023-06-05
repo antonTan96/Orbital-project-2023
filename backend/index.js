@@ -1,51 +1,24 @@
-import dotenv from "dotenv";
-import express from "express";
-import cors from "cors";
-import { welcome } from "./src/welcome.js";
-import { login } from "./src/login.js";
-import { register } from "./src/register.js";
-import { task } from "./src/sampleTask.js";
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const welcomeRoute = require('./src/routes/welcome');
+const loginRoute = require('./src/routes/login');
+const registerRoute = require('./src/routes/register');
+const userRoute = require('./src/routes/user');
+const taskRoute = require('./src/routes/task');
+const BE_PORT = require('./constants');
 
-dotenv.config();
 const app = express();
-
-const response = (code, message) => {
-  return { status: code, message: message };
-};
-
 app.use(cors());
 app.use(express.json());
 
-app.get("/", async (req, res) => {
-  const output = await welcome(response);
-  await res.status(output["status"]).send(output["message"]);
-});
+app.use("/", welcomeRoute);
+app.use("/login", loginRoute);
+app.use("/register", registerRoute);
+app.use("/user", userRoute);
+app.use("/task", taskRoute);
 
-app.get("/getCurrent", async (req, res) => {
-  const output = task;
-  await res.status(output["status"]).send(output["message"]);
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const output = await login(req.body, response);
-    await res.status(output["status"]).send(output["message"]);
-  } catch (error) {
-    console.error(error);
-    await res.status(500).send("Internal Server Error!");
-  }
-});
-
-app.post("/register", async (req, res) => {
-  try {
-    const output = await register(req.body, response);
-    await res.status(output["status"]).send(output["message"]);
-  } catch (error) {
-    console.log(error);
-    await res.status(500).send("Internal Server Error!");
-  }
-});
-
-app.listen(process.env.BE_PORT, () => {
-  console.log(`Backend API Listening on Port ${process.env.BE_PORT}`);
+const port = process.env.BE_PORT || BE_PORT;
+app.listen(port, () => {
+  console.log(`Backend API Listening on Port ${port}`);
 });
