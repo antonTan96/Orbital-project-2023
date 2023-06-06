@@ -3,6 +3,7 @@ import App from "./App";
 
 import CurrentTaskMenu from "./Menus/CurrentTaskMenu";
 import AllTaskMenu from "./Menus/AllTaskMenu";
+import ChangeTaskMenu from "./Menus/ChangeTaskMenu";
 export const routes = createBrowserRouter([
   {
     path: "/",
@@ -16,5 +17,9 @@ export const routes = createBrowserRouter([
   {
     path: `/:user/AllTasks`,
     element: <AllTaskMenu />,
+  },
+  {
+    path: `/:user/ChangeTask`,
+    element: <ChangeTaskMenu />,
   },
 ]);

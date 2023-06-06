@@ -1,66 +1,105 @@
 import { useState } from "react";
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ErrorContainer from "../OtherComponents/ErrorContainer";
 
 function SwitchRegister({ setHeader }) {
   const [regStatus, setRegStatus] = useState(false);
   const navigate = useNavigate();
-  const getCredentials = async (e) => {
-    //const response = await Axios.get("http://localhost:5000/getCredentials");
-    console.log("req sent");
+  const [errorString, setErrorString] = useState("");
 
-    const response = await Axios.post(
-      "https://orbital-be.azurewebsites.net:443/login",
-      e
-    );
-    console.log(response);
-    const username = e.Username;
+  function handleError(err) {
+    setErrorString(err);
+  }
 
-    if (response.status == 200) {
-      navigate(`/${username}/Menu`, { state: { login: true } });
+  function handleReg(e) {
+    // Prevent the browser from reloading the page
+    e.preventDefault();
+    const submitButton = document.getElementById("submitButton");
+    // Read the form data
+    const form = e.target;
+    const formData = new FormData(form);
+    //fetch('/some-api', { method: form.method, body: formData });
+    const formJson = Object.fromEntries(formData.entries());
+
+    if (
+      document.getElementById("pass")._valueTracker.getValue() ==
+      formJson.Password
+    ) {
+      saveCredentials(formJson);
+    } else {
+      setErrorString("Passwords are different");
     }
-  };
+  }
   const saveCredentials = async (e) => {
     //const response = await Axios.get("http://localhost:5000/getCredentials");
-    console.log("reg sent");
-
-    const response = await Axios.post(
-      "https://orbital-be.azurewebsites.net:443/register",
-      e
-    );
-    console.log(response.data);
+    const submitButton = document.getElementById("submitButton");
+    const username = e.Username;
+    try {
+      const response = await Axios.post(
+        "https://orbital-be.azurewebsites.net:443/register",
+        e
+      );
+      console.log(response);
+      if (response.status >= 200 && response.status < 300) {
+        localStorage.setItem("token", response.data.Data);
+        navigate(`/${username}/Menu`, { state: { login: true } });
+      }
+    } catch (e) {
+      if (e.response) {
+        console.log(e.response);
+        handleError(e.response.data.Message);
+      } else {
+        handleError(e.message);
+      }
+    }
   };
   function handleSubmit(e) {
     // Prevent the browser from reloading the page
     e.preventDefault();
-
+    const submitButton = document.getElementById("submitButton");
     // Read the form data
     const form = e.target;
+    submitButton.disabled = true;
+
     const formData = new FormData(form);
     //fetch('/some-api', { method: form.method, body: formData });
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
     getCredentials(formJson);
   }
-  function handleReg(e) {
-    // Prevent the browser from reloading the page
-    e.preventDefault();
+  const getCredentials = async (e) => {
+    //const response = await Axios.get("http://localhost:5000/getCredentials");
+    const submitButton = document.getElementById("submitButton");
+    try {
+      const response = await Axios.post(
+        "https://orbital-be.azurewebsites.net:443/login",
+        e
+      );
+      console.log(response);
+      const username = e.Username;
 
-    // Read the form data
-    const form = e.target;
-    const formData = new FormData(form);
-    //fetch('/some-api', { method: form.method, body: formData });
-    const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
+      if (response.status == 200) {
+        localStorage.setItem("token", response.data.Data);
+        navigate(`/${username}/Menu`);
+      }
+    } catch (e) {
+      if (e.response) {
+        console.log(e.response);
+        handleError(e.response.data.Message);
+      } else {
+        handleError(e.message);
+      }
 
-    if (formJson.pass == formJson.Password) {
-      saveCredentials(formJson);
-    } else {
-      console.log("stupid");
+      submitButton.disabled = false;
     }
-  }
+  };
+
   return regStatus ? (
     <>
+      <ErrorContainer
+        errorString={errorString}
+        setErrorString={setErrorString}
+      />
       <form onSubmit={(a) => handleReg(a)}>
         <div>
           <label>
@@ -77,16 +116,16 @@ function SwitchRegister({ setHeader }) {
         <div>
           <label>
             Password Again :
-            <input type="text" name="pass" />
+            <input type="text" id="pass" />
           </label>
         </div>
         <div>
           <label>
-            Start date:
-            <input type="date" name="deadline" />
+            Email:
+            <input type="text" name="Email" />
           </label>
         </div>
-        <input type="Submit" value="Submit" />
+        <button id="submitButton" type="Submit" children="Submit" />
       </form>
       <button
         onClick={() => {
@@ -99,6 +138,10 @@ function SwitchRegister({ setHeader }) {
     </>
   ) : (
     <>
+      <ErrorContainer
+        errorString={errorString}
+        setErrorString={setErrorString}
+      />
       <form onSubmit={(a) => handleSubmit(a)}>
         <div>
           <label>
@@ -112,7 +155,7 @@ function SwitchRegister({ setHeader }) {
             <input type="text" name="Password" />
           </label>
         </div>
-        <button type="Submit" children="Submit" />
+        <button id="submitButton" type="Submit" children="Submit" />
       </form>
       <button
         onClick={() => {

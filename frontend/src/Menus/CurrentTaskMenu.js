@@ -2,25 +2,40 @@ import { useEffect } from "react";
 import "./../App.css";
 import Axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 
 function CurrentTaskMenu() {
   const { user } = useParams();
-  const { state } = useLocation();
+  let current = {
+    task: "None",
+    deadline: "None",
+  };
   const navigate = useNavigate();
-  let taskList;
-  let current;
+
   function seeTasks() {
-    navigate(`./../AllTasks`, { state: { login: true, taskList: taskList } });
+    navigate(`./../AllTasks`);
+  }
+  function changeTask() {
+    navigate(`./../ChangeTask`);
+  }
+  async function theFunction() {
+    try {
+      console.log(localStorage.getItem("token"));
+      const response = await Axios.get(
+        "https://orbital-be.azurewebsites.net:443/task",
+        {
+          params: { Token: localStorage.getItem("token") },
+        }
+      );
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
   }
   useEffect(() => {
-    const response = Axios.get(
-      "https://orbital-be.azurewebsites.net:443/getList"
-    );
-    taskList = response.data.list;
-    current = response.data.current;
+    theFunction();
   });
-  return state.login ? (
+
+  return (
     <div className="App">
       <header className="App-header">
         <div>
@@ -31,12 +46,10 @@ function CurrentTaskMenu() {
         </div>
         <div></div>
         <div>Deadline : {current.deadline}</div>
+        <button onClick={() => seeTasks()}> Get Recommedation</button>
+        <button onClick={() => changeTask()}> Change Current Task</button>
         <button onClick={() => seeTasks()}> See All Tasks</button>
       </header>
-    </div>
-  ) : (
-    <div className="App">
-      <header className="App-header">Sugondese balls</header>
     </div>
   );
 }
