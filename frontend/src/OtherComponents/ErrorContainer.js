@@ -3,9 +3,9 @@ function ErrorContainer({ errorString, setErrorString }) {
     return;
   }
   return (
-    <>
-      <button onClick={() => setErrorString("")}>ok</button> {errorString}
-    </>
+    <div style={{ border: "5px solid white" }}>
+      {errorString} <button onClick={() => setErrorString("")}>ok</button>
+    </div>
   );
 }
 
