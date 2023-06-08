@@ -1,14 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./../App.css";
-import Axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-
+import CurrentTaskContainer from "./CurrentTaskContainer";
+import RefreshTasks from "../OtherComponents/RefreshTasks";
 function CurrentTaskMenu() {
+  const [isLoading, setLoading] = useState(true);
+  useEffect(() => {
+    RefreshTasks(setLoading);
+  });
+
   const { user } = useParams();
-  let current = {
-    task: "None",
-    deadline: "None",
-  };
+  let current = JSON.parse(localStorage.getItem("tasks")); //returns an array of tasks
+  if (current == undefined || current.length == 0) {
+    current = {
+      Name: "None",
+      Deadline: "None",
+    };
+  } else {
+    current = current[0];
+  }
+  console.log(current);
   const navigate = useNavigate();
 
   function seeTasks() {
@@ -17,35 +28,16 @@ function CurrentTaskMenu() {
   function changeTask() {
     navigate(`./../ChangeTask`);
   }
-  async function theFunction() {
-    try {
-      console.log(localStorage.getItem("token"));
-      const response = await Axios.get(
-        "https://orbital-be.azurewebsites.net:443/task",
-        {
-          params: { Token: localStorage.getItem("token") },
-        }
-      );
-      console.log(response);
-    } catch (e) {
-      console.log(e);
-    }
+  if (isLoading) {
+    return <>Loading</>;
   }
-  useEffect(() => {
-    theFunction();
-  });
-
   return (
     <div className="App">
       <header className="App-header">
         <div>
           <em>User : {user}</em>
         </div>
-        <div>
-          <em>Current Task : {current.task}</em>
-        </div>
-        <div></div>
-        <div>Deadline : {current.deadline}</div>
+        <CurrentTaskContainer task={current} />
         <button onClick={() => seeTasks()}> Get Recommedation</button>
         <button onClick={() => changeTask()}> Change Current Task</button>
         <button onClick={() => seeTasks()}> See All Tasks</button>

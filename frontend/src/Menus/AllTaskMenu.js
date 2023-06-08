@@ -1,38 +1,38 @@
-import { Axios } from "axios";
-import { useState } from "react";
+import Axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import RefreshTasks from "../OtherComponents/RefreshTasks";
 
 function AllTaskMenu() {
   const navigate = useNavigate();
+  const [isLoading, setLoading] = useState(true);
+  useEffect(() => {
+    RefreshTasks(setLoading);
+  });
 
-  let tasks = [
-    {
-      task: "None",
-      deadline: "None",
-    },
-  ];
-  const [list, changeList] = useState(tasks);
+  let tasks = JSON.parse(localStorage.getItem("tasks"));
+  console.log(tasks);
+  if (tasks == undefined || tasks.length === 0) {
+    tasks = [
+      {
+        Name: "None",
+        Deadline: "None",
+      },
+    ];
+  }
 
   function toMenu() {
-    navigate(`./../Menu`, { state: {} });
+    navigate(`./../Menu`);
   }
 
-  async function sendTask(task) {
-    const response = await Axios.get(
-      `https://orbital-be.azurewebsites.net:443/getList`,
-      { Token: localStorage.getItem("token") }
-    );
-    let updatedTaskList = response.data.list;
-    changeList(updatedTaskList);
-  }
   function TaskContainer({ tasks }) {
     return (
       <header id="dynamicList" className="App-header">
         <button onClick={() => toMenu()}>See Current Task</button>
         {tasks.map((e) => (
           <>
-            <div>{e.task}</div>
-            <>{e.deadline}</>
+            <div>{e.Name}</div>
+            <>{e.Deadline.substring(0, 10)}</>
           </>
         ))}
         <AddTaskContainer />
@@ -43,18 +43,25 @@ function AllTaskMenu() {
     function addTask(e) {
       e.preventDefault();
 
-      function sendTask(task) {
-        /*const response = await Axios.post(
-          `https://orbital-be.azurewebsites.net:443/addTask`,
+      async function sendTask(task) {
+        const response = await Axios.post(
+          `https://orbital-be.azurewebsites.net:443/task/add`,
           {
-            task: task,
-            user: user,
+            taskName: task.task,
+            taskDescription: "",
+            taskEndTime: task.deadline,
+            taskIssuer: "",
+            taskGetter: "",
+          },
+          {
+            headers: {
+              Token: localStorage.getItem("token"),
+            },
           }
-        );*/
-
-        var gayList = list.slice();
-        var trueList = [...gayList, task];
-        changeList(trueList);
+        );
+        console.log("the response is");
+        console.log(response);
+        setLoading(true);
       }
       // Read the form data
       const form = e.target;
@@ -77,7 +84,7 @@ function AllTaskMenu() {
           <div>
             <label>
               Deadline :
-              <input type="date" name="deadline" />
+              <input type="date" name="deadline" defaultValue={"2023-12-31"} />
             </label>
           </div>
           <button type="Submit" children="Add Task" />
@@ -85,11 +92,12 @@ function AllTaskMenu() {
       </>
     );
   }
-  //to be replaced with get data
-
+  if (isLoading) {
+    return <>Loading</>;
+  }
   return (
     <div className="App">
-      <TaskContainer tasks={list}></TaskContainer>
+      <TaskContainer tasks={tasks}></TaskContainer>
     </div>
   );
 }
