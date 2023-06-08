@@ -1,13 +1,11 @@
-import { useState } from "react";
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ErrorContainer from "../OtherComponents/ErrorContainer";
+import { useState } from "react";
 
-function SwitchRegister({ setHeader }) {
-  const [regStatus, setRegStatus] = useState(false);
-  const navigate = useNavigate();
+function RegisterContainer(set, pageChange) {
   const [errorString, setErrorString] = useState("");
-
+  const navigate = useNavigate();
   function handleError(err) {
     setErrorString(err);
   }
@@ -54,47 +52,7 @@ function SwitchRegister({ setHeader }) {
       }
     }
   };
-  function handleSubmit(e) {
-    // Prevent the browser from reloading the page
-    e.preventDefault();
-    const submitButton = document.getElementById("submitButton");
-    // Read the form data
-    const form = e.target;
-    submitButton.disabled = true;
-
-    const formData = new FormData(form);
-    //fetch('/some-api', { method: form.method, body: formData });
-    const formJson = Object.fromEntries(formData.entries());
-    getCredentials(formJson);
-  }
-  const getCredentials = async (e) => {
-    //const response = await Axios.get("http://localhost:5000/getCredentials");
-    const submitButton = document.getElementById("submitButton");
-    try {
-      const response = await Axios.post(
-        "https://orbital-be.azurewebsites.net:443/login",
-        e
-      );
-      console.log(response);
-      const username = e.Username;
-
-      if (response.status == 200) {
-        localStorage.setItem("token", response.data.Data);
-        navigate(`/${username}/Menu`);
-      }
-    } catch (e) {
-      if (e.response) {
-        console.log(e.response);
-        handleError(e.response.data.Message);
-      } else {
-        handleError(e.message);
-      }
-
-      submitButton.disabled = false;
-    }
-  };
-
-  return regStatus ? (
+  return (
     <>
       <ErrorContainer
         errorString={errorString}
@@ -127,46 +85,7 @@ function SwitchRegister({ setHeader }) {
         </div>
         <button id="submitButton" type="Submit" children="Submit" />
       </form>
-      <button
-        onClick={() => {
-          setRegStatus(false);
-          setHeader("Log In");
-        }}
-      >
-        Log In
-      </button>
-    </>
-  ) : (
-    <>
-      <ErrorContainer
-        errorString={errorString}
-        setErrorString={setErrorString}
-      />
-      <form onSubmit={(a) => handleSubmit(a)}>
-        <div>
-          <label>
-            Username :
-            <input type="text" name="Username" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Password :
-            <input type="text" name="Password" />
-          </label>
-        </div>
-        <button id="submitButton" type="Submit" children="Submit" />
-      </form>
-      <button
-        onClick={() => {
-          setRegStatus(true);
-          setHeader("Register");
-        }}
-      >
-        Register
-      </button>
     </>
   );
 }
-
-export default SwitchRegister;
+export default RegisterContainer;
