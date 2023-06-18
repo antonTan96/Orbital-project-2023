@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const bcrypt = require('bcryptjs');
 const Joi = require('joi');
 const connection = require('../connector');
+const { hash_password, jwt_generate_auth_token, encrypt_data } = require('../data_processing');
 
 router.post("/", async (req, res) => {
 	try {
@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
 
 		const table_name = "Users";
 		const inputs = req.body;
-		const Email = inputs["Email"]
+		const Email = inputs["Email"];
     	const Username = inputs["Username"];
     	const Password = inputs["Password"];
 
@@ -24,9 +24,14 @@ router.post("/", async (req, res) => {
 				return res.status(409).json({"Message" : "Username already exists!"});
 			}
 			query = `INSERT INTO ${table_name} (Username, Password, Email) VALUES (?, ?, ?)`;
-			const hashPassword = await bcrypt.hash(Password, bcrypt.genSaltSync(12));
-			connection.query(query, [Username, hashPassword, Email]);
-			return res.status(201).json({"Message" : "User registration Successful!"});
+			const passwordHash = await hash_password(Password);
+			connection.query(query, [Username, passwordHash, Email], (error, result) => {
+				if (error)
+					return res.status(500).json({"Message" : "Database Error!"});
+				const data = encrypt_data(Username);
+				const token = jwt_generate_auth_token(data);
+				return res.status(201).json({"Message" : "User registration Successful!", "Data" : token});
+			});
 		});
 		
 	} catch (error) {
@@ -37,9 +42,9 @@ router.post("/", async (req, res) => {
 
 function validate(inputs) {
 	const schema = Joi.object({
-		Username: Joi.string().min(1).max(255).required().label("Username"),
-		Email: Joi.string().email().max(255).required().label("Email"),
-		Password: Joi.string().required().label("Password")
+		Username: Joi.string().token().max(255).required(),
+		Email: Joi.string().email().max(255).required(),
+		Password: Joi.string().required()
 	});
 	return schema.validate(inputs);
 }

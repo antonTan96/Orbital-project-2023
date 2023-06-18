@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const  bcrypt = require('bcryptjs');
 const Joi = require('joi');
-const jwt = require('jsonwebtoken');
 const connection = require('../connector');
+const { encrypt_data, jwt_generate_auth_token } = require('../data_processing');
 
 router.post("/", async (req, res) => {
   try {
@@ -13,11 +13,10 @@ router.post("/", async (req, res) => {
 
     const inputs = req.body;
     const table_name = "Users";
-    const Email = inputs["Email"]
     const Username = inputs["Username"];
     const Password = inputs["Password"];
     const query = `SELECT Password FROM ${table_name} WHERE Username = BINARY ?`;
-    connection.query(query, [Username, Email], async (error, result) => {
+    connection.query(query, [Username], async (error, result) => {
       if (error) return res.status(500).json({"Message" : "database error"});
       if (result.length == 0) {
         return res.status(401).json({"Message" : "User has not registered yet!"});
@@ -26,9 +25,8 @@ router.post("/", async (req, res) => {
       const passwordCheck = await bcrypt.compare(Password, result[0]["Password"]);
   
       if (passwordCheck) {
-        const token = jwt.sign({"Username" : Username}, process.env.JWT_PRIVATE_KEY, {
-          "expiresIn" : "7d"
-        });
+        const data = encrypt_data(Username);
+        const token = jwt_generate_auth_token(data);
         return res.status(200).json({"Message" : "User login successful", "Data" : token});
       }
       return res.status(401).json({"Message" : "Incorrect Password!"});
@@ -41,8 +39,7 @@ router.post("/", async (req, res) => {
 
 function validate(inputs) {
   const schema = Joi.object({
-    Username: Joi.string().token().min(1).max(255).required().label("Username"),
-    Email: Joi.string().email().max(255).required().label("Email"),
+    Username: Joi.string().token().max(255).required().label("Username"),
     Password: Joi.string().required().label("Password")
   });
   return schema.validate(inputs);
