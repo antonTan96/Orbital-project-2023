@@ -13,6 +13,7 @@ function LoginContainer({ set, pageChange }) {
     // Prevent the browser from reloading the page
     e.preventDefault();
     const submitButton = document.getElementById("submitButton");
+
     // Read the form data
     const form = e.target;
     submitButton.disabled = true;
@@ -25,6 +26,7 @@ function LoginContainer({ set, pageChange }) {
   const getCredentials = async (e) => {
     //const response = await Axios.get("http://localhost:5000/getCredentials");
     const submitButton = document.getElementById("submitButton");
+
     try {
       const response = await Axios.post(
         "https://orbital-be.azurewebsites.net:443/login",

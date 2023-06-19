@@ -1,6 +1,7 @@
 import { useState } from "react";
 import LoginContainer from "./LoginContainer";
 import RegisterContainer from "./RegisterContainer";
+import UWUButton from "../CSSComponents/UWUButton";
 
 function LoginPage({ set }) {
   const [Login, changePage] = useState();
@@ -25,7 +26,7 @@ function LoginPage({ set }) {
   return (
     <>
       {Login}
-      <button
+      <UWUButton
         onClick={() => {
           changeText(buttonText);
         }}
