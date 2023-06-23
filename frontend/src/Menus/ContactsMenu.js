@@ -10,11 +10,15 @@ function ContactsMenu() {
   const [requestLoading, setRequestLoading] = useState(true);
 
   const [nameListAfterSearch, updateList] = useState(null);
-  let requestNum = JSON.parse(localStorage.getItem("Requests")).length;
+
   useEffect(() => {
     GetRequests(setRequestLoading);
     RefreshContacts(setContactLoading, updateList);
-  }, []);
+  }, [requestLoading]);
+  let requestNum = JSON.parse(localStorage.getItem("Requests"));
+  if (requestNum) {
+    requestNum = requestNum.length;
+  }
 
   function ContactsContainer(nameList) {
     return nameList ? (
