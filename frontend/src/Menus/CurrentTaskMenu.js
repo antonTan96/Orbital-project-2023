@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./../App.css";
 import { useNavigate, useParams } from "react-router-dom";
 import CurrentTaskContainer from "./CurrentTaskContainer";
-import RefreshTasks from "../OtherComponents/RefreshTasks";
+import RefreshTasks from "../CRUDFunctionAbstractions/RefreshTasks";
 import Axios from "axios";
 function CurrentTaskMenu() {
   const [isLoading, setLoading] = useState(true);
@@ -79,6 +79,7 @@ function CurrentTaskMenu() {
         <button onClick={() => changeTask()}> Change Current Task</button>
         <button onClick={() => seeTasks()}> See All Tasks</button>
         <button onClick={() => completeTask()}> Task Completed</button>
+        <button onClick={() => navigate(`./../Contacts`)}> Contacts</button>
       </header>
     </div>
   );

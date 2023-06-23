@@ -1,5 +1,5 @@
 import UWUButton from "../CSSComponents/UWUButton";
-import RefreshTasks from "../OtherComponents/RefreshTasks";
+import RefreshTasks from "../CRUDFunctionAbstractions/RefreshTasks";
 import { useEffect, useState } from "react";
 import PopupComponent from "../OtherComponents/PopupComponent";
 import Axios from "axios";
@@ -15,9 +15,7 @@ function ChangeTaskMenu() {
       const response = await Axios.patch(
         "https://orbital-be.azurewebsites.net:443/task/current",
         {
-          data: {
-            taskID: task["Task ID"],
-          },
+          taskID: task["Task ID"],
         },
         {
           headers: {

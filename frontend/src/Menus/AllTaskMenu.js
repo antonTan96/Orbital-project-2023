@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import RefreshTasks from "../OtherComponents/RefreshTasks";
+import RefreshTasks from "../CRUDFunctionAbstractions/RefreshTasks";
 import { useParams } from "react-router-dom";
 function AllTaskMenu() {
   const navigate = useNavigate();
@@ -25,12 +25,12 @@ function AllTaskMenu() {
           Token: localStorage.getItem("token"),
         },
         data: {
-          taskName: task["Task Name"],
+          taskID: task["Task ID"],
         },
       }).catch((e) => console.log(e));
       console.log(tasks);
 
-      tasks = tasks.filter((sus) => sus.Name != task.Name);
+      tasks = tasks.filter((sus) => sus["Task ID"] != task["Task ID"]);
       console.log(task);
       changeTasks(tasks);
     }
