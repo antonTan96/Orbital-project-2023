@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import React, { useState } from "react";
+import React from "react";
 
 const StyledButton = styled.button`
   color: white;
   height: ${(props) => props.height ?? "auto"};
-  width: 50%;
+  width: ${(props) => props.width ?? "50%"};
   background-color: blue;
   border: 5px solid yellow;
   border-radius: 5%;
@@ -17,24 +17,33 @@ const StyledButton = styled.button`
     color: white;
     background-color: white;
   }
+  :disabled {
+    color: black;
+    background-color: black;
+    text-shadow: none;
+  }
 `;
-function UWUButton({ onClick, children }) {
+function UWUButton(props) {
   function NewlineText(text) {
-    const newText = text.split("\n").map((str) => <div>{str}</div>);
+    let x = "";
+    for (let i = 0; i < text.length; i++) {
+      x += text[i];
+    }
+    const newText = x.split("\n").map((str) => <div>{str}</div>);
 
     return newText;
   }
-
+  console.log(props.children);
   return (
     <StyledButton
+      id={props.id}
       onClick={(e) => {
-        e.target.disabled = true;
-
-        onClick();
-        e.target.disabled = false;
+        props.onClick();
       }}
+      width={props.width}
+      disabled={props.disabled ? true : false}
     >
-      {NewlineText(children)}
+      {NewlineText(props.children)}
     </StyledButton>
   );
 }

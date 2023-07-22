@@ -1,0 +1,47 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  left: -300px;
+  background-color: greenyellow;
+  width: 200px;
+  height: 100vh;
+  color: black;
+  transition: left 0.5s ease-in-out;
+}
+.show {
+  left: 0;
+}
+.icon {
+  border-radius: 71.5px;
+  background: #a0a0a0;
+  border: 2px solid #000;
+  width: 40px;
+  height: 5px;
+}
+.navbarButton {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  height: 40px;
+  width: 40px;
+}
+.content {
+  border-bottom: 4px solid black;
+  transition: color 0.3s ease-in-out;
+  height: 5vh;
+  font-size: calc(5vh / 1.5);
+  transition: background-color 0.3s ease-in-out;
+}
+.content:hover {
+  color: red;
+  background-color: green;
+  text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px #bc13fe;
+}
+.content:active {
+  color: white;
+  background-color: white;
+}

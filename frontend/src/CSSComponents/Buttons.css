@@ -1,0 +1,45 @@
+.base {
+  margin-left: 100%;
+  border-radius: 10px;
+  border: 1px solid #000;
+  background: #d9d9d9;
+  width: 30px;
+  aspect-ratio: 1 / 1;
+}
+.base .XButton {
+  height: 100%;
+  width: 100%;
+  object-position: center;
+  background-image: url("./../Assets/X.png");
+  background-size: 50% 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.base .XButton:hover {
+  background-image: url("./../Assets/RedX.png");
+}
+.base .XButton:active {
+  background-image: url("./../Assets/NiggaX.png");
+}
+.SendTaskButton {
+  height: 30px;
+  width: 30px;
+  object-position: center;
+  background-image: url("./../Assets/SendTaskIcon.png");
+  background-size: 80% 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.RemoveFriendButton {
+  height: 30px;
+  width: 30px;
+  object-position: center;
+  background-image: url("./../Assets/person.png");
+  background-size: 80% 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.RemoveFriendButton:hover {
+  background-image: url("./../Assets/Removeperson.png");
+}
