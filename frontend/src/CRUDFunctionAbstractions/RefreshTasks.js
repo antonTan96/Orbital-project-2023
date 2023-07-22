@@ -1,6 +1,6 @@
 import Axios from "axios";
 
-function RefreshTasks(setLoading) {
+function RefreshTasks(updateList) {
   localStorage.removeItem("tasks");
 
   Axios.get("https://orbital-be.azurewebsites.net:443/task", {
@@ -12,10 +12,10 @@ function RefreshTasks(setLoading) {
       if (response.data.Data.length != 0) {
         console.log(response.data);
 
-        localStorage.setItem("tasks", JSON.stringify(response.data.Data));
-        console.log(JSON.parse(localStorage.getItem("tasks")));
+        updateList(response.data.Data);
+      } else {
+        updateList([]);
       }
-      setLoading(false);
     })
     .catch((e) => console.log(e));
   console.log("done");
