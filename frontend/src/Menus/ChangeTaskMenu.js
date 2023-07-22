@@ -1,14 +1,19 @@
 import UWUButton from "../CSSComponents/UWUButton";
 import RefreshTasks from "../CRUDFunctionAbstractions/RefreshTasks";
 import { useEffect, useState } from "react";
-import PopupComponent from "../OtherComponents/PopupComponent";
+import "./../CSSComponents/modal.css";
 import Axios from "axios";
+import NavigationBar from "../OtherComponents/NavigationBar";
+import images from "../Assets/FinalBackground.png";
+import Background from "../CSSComponents/Background";
+import { useNavigate } from "react-router-dom";
 function ChangeTaskMenu() {
-  const [loading, setLoading] = useState(true);
+  const [tasks, changeTasks] = useState(null);
+  const navigate = useNavigate();
   useEffect(() => {
-    RefreshTasks(setLoading);
-  });
-  const tasks = JSON.parse(localStorage.getItem("tasks"));
+    RefreshTasks(changeTasks);
+  }, []);
+
   async function changeTask(task) {
     try {
       console.log(task);
@@ -24,6 +29,7 @@ function ChangeTaskMenu() {
         }
       );
       console.log(response);
+      navigate("./../Menu");
     } catch (e) {
       if (e.response) {
         console.log(e.response);
@@ -32,24 +38,22 @@ function ChangeTaskMenu() {
       }
     }
   }
-  if (loading) {
-    return <>Loading</>;
-  }
+
   if (tasks == null) {
     return <header className="App-header"></header>;
   }
   return (
     <div className="App">
       <header className="App-header">
+        <Background image={images} />
         {tasks.map((e) => (
-          <UWUButton
-            onClick={() => changeTask(e)}
-            children={`${e["Task Name"]}
-             ${e.Deadline}`}
-          ></UWUButton>
+          <UWUButton onClick={() => changeTask(e)}>
+            {`${e["Task Name"]}
+             ${e.Deadline.slice(0, 10)}`}
+          </UWUButton>
         ))}
-        <PopupComponent />
       </header>
+      <NavigationBar />
     </div>
   );
 }

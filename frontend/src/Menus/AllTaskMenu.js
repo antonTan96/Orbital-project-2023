@@ -1,59 +1,51 @@
 import Axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RefreshTasks from "../CRUDFunctionAbstractions/RefreshTasks";
 import { useParams } from "react-router-dom";
+import AnotherButton from "../CSSComponents/AnotherButton";
+import NavigationBar from "../OtherComponents/NavigationBar";
+import images from "../Assets/FinalBackground.png";
+import Background from "../CSSComponents/Background";
+import "../CSSComponents/container.css";
+import XButton from "../OtherComponents/XButton";
+
 function AllTaskMenu() {
   const navigate = useNavigate();
   const user = useParams();
-  let temp = JSON.parse(localStorage.getItem("tasks"));
-  if (temp != null) {
-    temp.sort((a, b) => a.Deadline > b.Deadline);
+
+  const [tasks, changeTasks] = useState(null);
+  if (tasks != null) {
+    tasks.sort((a, b) => a.Deadline > b.Deadline);
   }
-  const [tasks, changeTasks] = useState(temp);
 
   console.log(tasks);
-
-  function toMenu() {
-    navigate(`./../Menu`);
-  }
+  useEffect(() => {
+    RefreshTasks(changeTasks);
+  }, []);
 
   function TaskContainer({ tasks }) {
-    function removeTask(task) {
-      Axios.delete("https://orbital-be.azurewebsites.net:443/task/delete", {
-        headers: {
-          Token: localStorage.getItem("token"),
-        },
-        data: {
-          taskID: task["Task ID"],
-        },
-      }).catch((e) => console.log(e));
-      console.log(tasks);
-
-      tasks = tasks.filter((sus) => sus["Task ID"] != task["Task ID"]);
-      console.log(task);
-      changeTasks(tasks);
-    }
     return (
       <header id="dynamicList" className="App-header">
-        <button onClick={() => toMenu()}>See Current Task</button>
         <AddTaskContainer />
-
-        {tasks
-          ? tasks.map((e) => (
-              <>
-                <>
-                  <div>{e["Task Name"]}</div>
-                  <>{e.Deadline.substring(0, 10)}</>
-                </>
-                <button onClick={() => removeTask(e)}>Remove Task</button>
-              </>
-            ))
-          : null}
+        <div className="list">
+          <div style={{ textDecoration: "underline" }}> Tasks</div>
+          {tasks
+            ? tasks.map((e) => (
+                <div>
+                  <AnotherButton task={e} list={tasks} updateList={changeTasks}>
+                    {e["Task Name"]}
+                  </AnotherButton>
+                </div>
+              ))
+            : null}
+        </div>
       </header>
     );
   }
   function AddTaskContainer() {
+    const [modal, changeModal] = useState(false);
+
     function addTask(e) {
       e.preventDefault();
 
@@ -63,7 +55,7 @@ function AllTaskMenu() {
             `https://orbital-be.azurewebsites.net:443/task/add`,
             {
               taskName: task["Task Name"],
-              taskDescription: "",
+              taskDescription: task["Task Description"],
               taskEndTime: task.Deadline,
               taskIssuer: user.user,
               taskGetter: user.user,
@@ -76,13 +68,12 @@ function AllTaskMenu() {
           );
           console.log("the response is");
           console.log(response);
+          RefreshTasks(changeTasks);
         } catch (e) {
-          if (e.response.status === 400) {
-            tasks.shift();
-            changeTasks(tasks);
-          } else {
-            console.log(e);
+          if (e) {
+            alert(JSON.parse(e.request.response).Message);
           }
+          console.log(e.request);
         }
       }
       // Read the form data
@@ -92,61 +83,76 @@ function AllTaskMenu() {
       const formJson = Object.fromEntries(formData.entries());
       console.log(formJson);
       sendTask(formJson);
-
-      if (tasks == null) {
-        localStorage.setItem("tasks", JSON.stringify([formJson]));
-        changeTasks([formJson]);
-      } else {
-        let gaylist = tasks.slice();
-        let trulist = [...gaylist, formJson];
-        trulist.sort((a, b) => a.Deadline > b.Deadline);
-        localStorage.setItem("tasks", JSON.stringify(trulist));
-        changeTasks(trulist);
-      }
     }
 
     return (
       <>
-        <form onSubmit={(a) => addTask(a)}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
-            <label>
-              Task :
-              <input type="text" name="Task Name" />
-            </label>
-          </div>
-          <div>
-            <label
-              style={{
-                display: "flex",
-
-                alignItems: "flex-start",
+        <button
+          className="checkable"
+          style={{ width: "40%" }}
+          onClick={() => changeModal(!modal)}
+        >
+          Add Task
+        </button>
+        {modal && (
+          <>
+            <div
+              onClick={() => {
+                changeModal(!modal);
               }}
-            >
-              Description :
-              <textarea name="Task Description" rows="5" cols="17"></textarea>
-            </label>
-          </div>
-          <div>
-            <label>
-              Deadline :
-              <input type="date" name="Deadline" defaultValue={"2023-12-31"} />
-            </label>
-          </div>
-          <button type="Submit" children="Add Task" />
-        </form>
+              className="overlay"
+            ></div>
+            <form className="basicContainer" onSubmit={(a) => addTask(a)}>
+              <XButton
+                onClick={() => {
+                  changeModal(!modal);
+                }}
+              ></XButton>
+              <div style={{ marginLeft: "60px" }}>
+                <label>
+                  Task :
+                  <input type="text" name="Task Name" />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Description :
+                  <textarea
+                    name="Task Description"
+                    rows="5"
+                    cols="17"
+                  ></textarea>
+                </label>
+              </div>
+              <div>
+                <label>
+                  Deadline :
+                  <input
+                    type="date"
+                    name="Deadline"
+                    defaultValue={"2023-12-31"}
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Recommend Task?
+                  <input type="checkbox" name="Public" />
+                </label>
+              </div>
+              <button type="Submit" children="Add Task" />
+            </form>
+          </>
+        )}
       </>
     );
   }
 
   return (
     <div className="App">
+      <Background image={images} />
       <TaskContainer tasks={tasks}></TaskContainer>
+      <NavigationBar />
     </div>
   );
 }

@@ -4,6 +4,13 @@ import RefreshContacts from "../CRUDFunctionAbstractions/RefreshContacts";
 import { useState, useEffect } from "react";
 import GetRequests from "../CRUDFunctionAbstractions/GetRequests";
 import DeleteFriend from "../CRUDFunctionAbstractions/DeleteFriend";
+import NavigationBar from "../OtherComponents/NavigationBar";
+import images from "../Assets/FinalBackground.png";
+import Background from "../CSSComponents/Background";
+import UWUButton from "../CSSComponents/UWUButton";
+import SendTaskButton from "../OtherComponents/SendTaskButton";
+import RemoveFriendButton from "../OtherComponents/RemoveFriendButton";
+import "./../CSSComponents/container.css";
 function ContactsMenu() {
   const navigate = useNavigate();
   const [contactLoading, setContactLoading] = useState(true);
@@ -23,23 +30,24 @@ function ContactsMenu() {
   function ContactsContainer(nameList) {
     return nameList ? (
       nameList.nameList.map((fre) => (
-        <div>
-          {fre.Friends}{" "}
-          <button
-            onClick={() =>
-              DeleteFriend(fre.Friends, nameList.nameList, updateList)
-            }
-          >
-            Remove
-          </button>
-          <button
-            onClick={() =>
-              navigate("./SendTask", { state: { user: fre.Friends } })
-            }
-          >
-            {" "}
-            Send Task
-          </button>
+        <div className="containerWithButtons">
+          <>{fre.Friends} </>
+          <div className="buttonContainer">
+            <RemoveFriendButton
+              onClick={() =>
+                DeleteFriend(fre.Friends, nameList.nameList, updateList)
+              }
+            >
+              Remove
+            </RemoveFriendButton>
+            <SendTaskButton
+              onClick={() =>
+                navigate("./SendTask", { state: { user: fre.Friends } })
+              }
+            >
+              Send Task
+            </SendTaskButton>
+          </div>
         </div>
       ))
     ) : (
@@ -99,17 +107,21 @@ function ContactsMenu() {
   return (
     <div className="App">
       <header className="App-header">
+        <Background image={images} />
         <>Contacts</>
-        <button onClick={() => navigate("./AddContacts")}>
+        <UWUButton onClick={() => navigate("./AddContacts")}>
           Add new Contacts
-        </button>
-        <button onClick={() => navigate("./Requests")}>
+        </UWUButton>
+        <UWUButton onClick={() => navigate("./Requests")}>
           View Requests ( {requestNum} )
-        </button>
-        <form onSubmit={(e) => query(e)}>
-          <input name="prefix"></input>
-        </form>
-        <ContactsContainer nameList={nameListAfterSearch} />
+        </UWUButton>
+        <div className="list">
+          <form onSubmit={(e) => query(e)}>
+            <input name="prefix" placeholder="Search your friends here"></input>
+          </form>
+          <ContactsContainer nameList={nameListAfterSearch} />
+        </div>
+        <NavigationBar />
       </header>
     </div>
   );

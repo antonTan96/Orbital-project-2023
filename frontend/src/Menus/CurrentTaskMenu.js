@@ -4,34 +4,52 @@ import { useNavigate, useParams } from "react-router-dom";
 import CurrentTaskContainer from "./CurrentTaskContainer";
 import RefreshTasks from "../CRUDFunctionAbstractions/RefreshTasks";
 import Axios from "axios";
+import NavigationBar from "../OtherComponents/NavigationBar";
+import images from "../Assets/FinalBackground.png";
+import Background from "../CSSComponents/Background";
+import UWUButton from "../CSSComponents/UWUButton";
 function CurrentTaskMenu() {
-  const [isLoading, setLoading] = useState(true);
+  const [taskList, updateList] = useState(null);
+  let disable = true;
+  let chosen = false;
   useEffect(() => {
-    RefreshTasks(setLoading);
-  });
+    RefreshTasks(updateList);
+  }, []);
 
   const { user } = useParams();
-  let current = JSON.parse(localStorage.getItem("tasks")); //returns an array of tasks
-  if (current == undefined || current.length == 0) {
+  let current = taskList; //returns an array of tasks
+  console.log(current);
+  if (current == undefined) {
+    current = {
+      "Task Name": "Loading...",
+      Deadline: "Loading...",
+    };
+  } else if (current.length == 0) {
     current = {
       "Task Name": "None",
       Deadline: "None",
     };
   } else {
-    let chosen = false;
-    for (let i = 0; i < current.length; i++) {
-      if (current[i]["Is Current"] != 0) {
-        current = current[i];
-        chosen = true;
-        break;
-      }
-      if (!chosen) {
-        current = {
-          "Task Name": "None",
-          Deadline: "None",
-        };
+    if (!chosen) {
+      for (let i = 0; i < current.length; i++) {
+        if (current[i]["Is Current"] != 0) {
+          current = current[i];
+          disable = false;
+          chosen = true;
+          console.log("wut");
+
+          break;
+        }
+        if (!chosen) {
+          current = {
+            "Task Name": "None",
+            Deadline: "None",
+          };
+        }
       }
     }
+    console.log("the task?");
+    console.log(current);
   }
   console.log(current);
   const navigate = useNavigate();
@@ -65,21 +83,27 @@ function CurrentTaskMenu() {
       }
     }
   }
-  if (isLoading) {
-    return <>Loading</>;
-  }
+
   return (
     <div className="App">
       <header className="App-header">
+        <Background image={images} />
         <div>
           <em>User : {user}</em>
         </div>
         <CurrentTaskContainer task={current} />
-        <button onClick={() => seeTasks()}> Get Recommedation</button>
-        <button onClick={() => changeTask()}> Change Current Task</button>
-        <button onClick={() => seeTasks()}> See All Tasks</button>
-        <button onClick={() => completeTask()}> Task Completed</button>
-        <button onClick={() => navigate(`./../Contacts`)}> Contacts</button>
+        <div>
+          <UWUButton onClick={() => seeTasks()}> Get Recommedation</UWUButton>
+          <UWUButton onClick={() => changeTask()}>
+            Change Current Task
+          </UWUButton>
+          <UWUButton onClick={() => completeTask()} disabled={disable}>
+            {" "}
+            Task Completed
+          </UWUButton>
+        </div>
+
+        <NavigationBar />
       </header>
     </div>
   );

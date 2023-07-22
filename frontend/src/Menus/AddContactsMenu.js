@@ -3,13 +3,16 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import SendRequest from "../CRUDFunctionAbstractions/SendRequest";
 import CancelRequest from "../CRUDFunctionAbstractions/CancelRequest";
+import NavigationBar from "../OtherComponents/NavigationBar";
+import images from "../Assets/FinalBackground.png";
+import Background from "../CSSComponents/Background";
 function AddContactsMenu() {
   const searcher = useParams();
   const [list, updateList] = useState(null);
 
   console.log(list);
   function buttonBasedOnStatus(user) {
-    console.log(user);
+    console.log(user["Friend Status"]);
     switch (user["Friend Status"]) {
       case "Nothing":
         return (
@@ -51,7 +54,11 @@ function AddContactsMenu() {
         console.log("the response is");
         console.log(response); //returns array of objects of users
         updateList(
-          response.data.Data.filter((obj) => obj.Username != searcher.user)
+          response.data.Data.filter(
+            (obj) =>
+              obj.Username != searcher.user &&
+              obj["Friend Status"] != "Accepted"
+          )
         );
       } catch (e) {
         if (e.response && e.response.status === 400) {
@@ -71,23 +78,35 @@ function AddContactsMenu() {
   }
   return (
     <div className="App">
+      <Background image={images} />
       <header className="App-header">
         <form onSubmit={(e) => query(e)}>
           <input name="prefix"></input>
         </form>
-        {list ? (
-          list.length != 0 ? (
-            list.map((user) => (
-              <div>
-                <>{user.Users}</> {buttonBasedOnStatus(user)}
-              </div>
-            ))
+        <div className="list">
+          {list ? (
+            list.length != 0 ? (
+              list.map((user) => (
+                <div
+                  className="containerWithButtons"
+                  style={{ wordWrap: "break-word" }}
+                >
+                  <div style={{ wordWrap: "break-word", maxWidth: "50%" }}>
+                    {user.Users}
+                  </div>
+                  <div className="buttonContainer">
+                    {buttonBasedOnStatus(user)}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <>No User</>
+            )
           ) : (
-            <>No User</>
-          )
-        ) : (
-          <>Search for User</>
-        )}
+            <>Search for User</>
+          )}
+        </div>
+        <NavigationBar />
       </header>
     </div>
   );

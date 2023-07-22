@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import NavigationBar from "../OtherComponents/NavigationBar";
+import images from "../Assets/FinalBackground.png";
+import Background from "../CSSComponents/Background";
 function SendTaskMenu() {
   const user = useParams();
   const navigate = useNavigate();
@@ -51,6 +54,7 @@ function SendTaskMenu() {
   return (
     <div className="App">
       <header className="App-header">
+        <Background image={images} />
         <>
           <form onSubmit={(a) => addTask(a)}>
             <div
@@ -91,6 +95,7 @@ function SendTaskMenu() {
           </form>
         </>
       </header>
+      <NavigationBar />
     </div>
   );
 }
