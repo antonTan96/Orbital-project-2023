@@ -6,9 +6,12 @@ import UWUButton from "../CSSComponents/UWUButton";
 function LoginPage({ set }) {
   const [Login, changePage] = useState();
 
-  const text = ["Log in", "Register"];
+  const text = ["Log in to existing account", "No account? Register!"];
   const [buttonText, changeButton] = useState(text[0]);
   const components = [<RegisterContainer />, <LoginContainer />];
+  localStorage.removeItem("token");
+  localStorage.removeItem("Contacts");
+  localStorage.removeItem("Requests");
 
   function changeText(a) {
     console.log(a);
@@ -30,6 +33,8 @@ function LoginPage({ set }) {
         onClick={() => {
           changeText(buttonText);
         }}
+        width="100px"
+        id="changeLoginMethodButton"
         children={buttonText}
       />
     </>

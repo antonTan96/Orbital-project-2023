@@ -13,10 +13,11 @@ function LoginContainer({ set, pageChange }) {
     // Prevent the browser from reloading the page
     e.preventDefault();
     const submitButton = document.getElementById("submitButton");
-
+    const switchButton = document.getElementById("changeLoginMethodButton");
     // Read the form data
     const form = e.target;
     submitButton.disabled = true;
+    switchButton.disabled = true;
 
     const formData = new FormData(form);
     //fetch('/some-api', { method: form.method, body: formData });
@@ -26,6 +27,7 @@ function LoginContainer({ set, pageChange }) {
   const getCredentials = async (e) => {
     //const response = await Axios.get("http://localhost:5000/getCredentials");
     const submitButton = document.getElementById("submitButton");
+    const switchButton = document.getElementById("changeLoginMethodButton");
 
     try {
       const response = await Axios.post(
@@ -48,6 +50,7 @@ function LoginContainer({ set, pageChange }) {
       }
 
       submitButton.disabled = false;
+      switchButton.disabled = false;
     }
   };
 
@@ -70,7 +73,7 @@ function LoginContainer({ set, pageChange }) {
             <input type="password" name="Password" />
           </label>
         </div>
-        <button id="submitButton" type="Submit" children="Submit" />
+        <button id="submitButton" type="Submit" children="Log in" />
       </form>
     </>
   );

@@ -32,7 +32,10 @@ function RegisterContainer(set, pageChange) {
   const saveCredentials = async (e) => {
     //const response = await Axios.get("http://localhost:5000/getCredentials");
     const submitButton = document.getElementById("submitButton");
+    const switchButton = document.getElementById("changeLoginMethodButton");
     const username = e.Username;
+    submitButton.disabled = true;
+    switchButton.disabled = true;
     try {
       const response = await Axios.post(
         "https://orbital-be.azurewebsites.net:443/register",
@@ -50,6 +53,8 @@ function RegisterContainer(set, pageChange) {
       } else {
         handleError(e.message);
       }
+      submitButton.disabled = false;
+      switchButton.disabled = false;
     }
   };
   return (
@@ -68,13 +73,13 @@ function RegisterContainer(set, pageChange) {
         <div>
           <label>
             Password :
-            <input type="text" name="Password" />
+            <input type="password" name="Password" />
           </label>
         </div>
         <div>
           <label>
             Password Again :
-            <input type="text" id="pass" />
+            <input type="password" id="pass" />
           </label>
         </div>
         <div>
@@ -83,7 +88,7 @@ function RegisterContainer(set, pageChange) {
             <input type="text" name="Email" />
           </label>
         </div>
-        <button id="submitButton" type="Submit" children="Submit" />
+        <button id="submitButton" type="Submit" children="Register Account" />
       </form>
     </>
   );
