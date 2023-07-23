@@ -5,7 +5,7 @@ function CheckUser() {
   const user = useParams();
   const navigate = useNavigate();
   console.log("checking");
-  console.log(user.user != localStorage.getItem("user"));
+
   useEffect(() => {
     if (user.user != localStorage.getItem("user")) {
       navigate("../");

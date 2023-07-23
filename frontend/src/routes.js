@@ -9,6 +9,7 @@ import AddContactsMenu from "./Menus/AddContactsMenu";
 import RequestMenu from "./Menus/RequestMenu";
 import SendTaskMenu from "./Menus/SendTaskMenu";
 import AccountActivationPage from "./Authentication/AccountAcivationPage";
+import GetRecommendation from "./Menus/GetRecommendation";
 
 export const routes = createBrowserRouter([
   {
@@ -21,11 +22,15 @@ export const routes = createBrowserRouter([
     element: <CurrentTaskMenu />,
   },
   {
+    path: `/:user/Menu/Recommendation`,
+    element: <GetRecommendation />,
+  },
+  {
     path: `/:user/AllTasks`,
     element: <AllTaskMenu />,
   },
   {
-    path: `/:user/ChangeTask`,
+    path: `/:user/Menu/ChangeTask`,
     element: <ChangeTaskMenu />,
   },
   {

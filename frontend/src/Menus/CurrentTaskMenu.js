@@ -56,11 +56,11 @@ function CurrentTaskMenu() {
   console.log(current);
   const navigate = useNavigate();
 
-  function seeTasks() {
-    navigate(`./../AllTasks`);
+  function getNewTask() {
+    navigate(`./Recommendation`);
   }
   function changeTask() {
-    navigate(`./../ChangeTask`);
+    navigate(`./ChangeTask`);
   }
   async function completeTask() {
     try {
@@ -95,7 +95,10 @@ function CurrentTaskMenu() {
         </div>
         <CurrentTaskContainer task={current} />
         <div>
-          <UWUButton onClick={() => seeTasks()}> Get Recommedation</UWUButton>
+          <UWUButton onClick={() => getNewTask()}>
+            {" "}
+            Get Recommendation
+          </UWUButton>
           <UWUButton onClick={() => changeTask()}>
             Change Current Task
           </UWUButton>

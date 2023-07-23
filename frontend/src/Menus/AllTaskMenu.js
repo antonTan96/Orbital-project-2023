@@ -10,6 +10,7 @@ import Background from "../CSSComponents/Background";
 import "../CSSComponents/container.css";
 import XButton from "../OtherComponents/XButton";
 import CheckUser from "../CRUDFunctionAbstractions/CheckUser";
+import AddPublicTask from "../CRUDFunctionAbstractions/AddPublicTask";
 
 function AllTaskMenu() {
   const navigate = useNavigate();
@@ -52,6 +53,10 @@ function AllTaskMenu() {
 
       async function sendTask(task) {
         try {
+          console.log(task.Deadline);
+          if (task.Public == "on") {
+            AddPublicTask(task);
+          }
           const response = await Axios.post(
             `https://orbital-be.azurewebsites.net:443/task/add`,
             {
@@ -125,6 +130,7 @@ function AllTaskMenu() {
                   ></textarea>
                 </label>
               </div>
+
               <div>
                 <label>
                   Deadline :
@@ -140,6 +146,16 @@ function AllTaskMenu() {
                   Recommend Task?
                   <input type="checkbox" name="Public" />
                 </label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    alert(
+                      "Recommend tasks to others! The 'Get Recommendation' feature is based entirely on inputs from our community!"
+                    )
+                  }
+                >
+                  ?
+                </button>
               </div>
               <button type="Submit" children="Add Task" />
             </form>

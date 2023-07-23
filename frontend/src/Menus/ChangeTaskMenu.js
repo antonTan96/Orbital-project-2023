@@ -7,37 +7,16 @@ import NavigationBar from "../OtherComponents/NavigationBar";
 import images from "../Assets/FinalBackground.png";
 import Background from "../CSSComponents/Background";
 import { useNavigate } from "react-router-dom";
+import CheckUser from "../CRUDFunctionAbstractions/CheckUser";
+import ChangeTask from "../CRUDFunctionAbstractions/ChangeTask";
+
 function ChangeTaskMenu() {
   const [tasks, changeTasks] = useState(null);
   const navigate = useNavigate();
+  CheckUser();
   useEffect(() => {
     RefreshTasks(changeTasks);
   }, []);
-
-  async function changeTask(task) {
-    try {
-      console.log(task);
-      const response = await Axios.patch(
-        "https://orbital-be.azurewebsites.net:443/task/current",
-        {
-          taskID: task["Task ID"],
-        },
-        {
-          headers: {
-            Token: localStorage.getItem("token"),
-          },
-        }
-      );
-      console.log(response);
-      navigate("./../Menu");
-    } catch (e) {
-      if (e.response) {
-        console.log(e.response);
-      } else {
-        console.log(e);
-      }
-    }
-  }
 
   if (tasks == null) {
     return <header className="App-header"></header>;
@@ -47,7 +26,7 @@ function ChangeTaskMenu() {
       <header className="App-header">
         <Background image={images} />
         {tasks.map((e) => (
-          <UWUButton onClick={() => changeTask(e)}>
+          <UWUButton onClick={() => ChangeTask(e["Task ID"], navigate)}>
             {`${e["Task Name"]}
              ${e.Deadline.slice(0, 10)}`}
           </UWUButton>

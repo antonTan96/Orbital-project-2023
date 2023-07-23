@@ -18,9 +18,7 @@ const StyledButton = styled.button`
     background-color: white;
   }
   :disabled {
-    color: black;
-    background-color: black;
-    text-shadow: none;
+    opacity: 0.6;
   }
 `;
 function UWUButton(props) {

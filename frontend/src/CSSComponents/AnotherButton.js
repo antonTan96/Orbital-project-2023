@@ -29,6 +29,8 @@ function AnotherButton(props) {
     dateObject.setHours(23);
     dateObject.setMinutes(59);
     const currentDate = new Date();
+    console.log(currentDate);
+    console.log(dateObject);
     return dateObject - currentDate;
   }
 
