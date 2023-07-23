@@ -8,10 +8,12 @@ import NavigationBar from "../OtherComponents/NavigationBar";
 import images from "../Assets/FinalBackground.png";
 import Background from "../CSSComponents/Background";
 import UWUButton from "../CSSComponents/UWUButton";
+import CheckUser from "../CRUDFunctionAbstractions/CheckUser";
 function CurrentTaskMenu() {
   const [taskList, updateList] = useState(null);
   let disable = true;
   let chosen = false;
+  CheckUser();
   useEffect(() => {
     RefreshTasks(updateList);
   }, []);

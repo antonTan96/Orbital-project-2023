@@ -4,7 +4,9 @@ import { useState } from "react";
 import NavigationBar from "../OtherComponents/NavigationBar";
 import images from "../Assets/FinalBackground.png";
 import Background from "../CSSComponents/Background";
+import CheckUser from "../CRUDFunctionAbstractions/CheckUser";
 function RequestMenu() {
+  CheckUser();
   let [requests, updateRequests] = useState(
     JSON.parse(localStorage.getItem("Requests"))
   );

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ErrorContainer from "../OtherComponents/ErrorContainer";
 import { useState } from "react";
 
-function LoginContainer({ set, pageChange }) {
+function LoginContainer() {
   const [errorString, setErrorString] = useState("");
   const navigate = useNavigate();
   function handleError(e) {
@@ -39,6 +39,7 @@ function LoginContainer({ set, pageChange }) {
 
       if (response.status === 200) {
         localStorage.setItem("token", response.data.Data);
+        localStorage.setItem("user", username);
         navigate(`../${username}/Menu`);
       }
     } catch (e) {

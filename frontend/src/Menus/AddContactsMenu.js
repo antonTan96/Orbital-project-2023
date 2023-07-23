@@ -6,9 +6,11 @@ import CancelRequest from "../CRUDFunctionAbstractions/CancelRequest";
 import NavigationBar from "../OtherComponents/NavigationBar";
 import images from "../Assets/FinalBackground.png";
 import Background from "../CSSComponents/Background";
+import CheckUser from "../CRUDFunctionAbstractions/CheckUser";
 function AddContactsMenu() {
   const searcher = useParams();
   const [list, updateList] = useState(null);
+  CheckUser();
 
   console.log(list);
   function buttonBasedOnStatus(user) {

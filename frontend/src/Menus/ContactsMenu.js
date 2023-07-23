@@ -11,13 +11,14 @@ import UWUButton from "../CSSComponents/UWUButton";
 import SendTaskButton from "../CSSComponents/SendTaskButton";
 import RemoveFriendButton from "../CSSComponents/RemoveFriendButton";
 import "./../CSSComponents/container.css";
+import CheckUser from "../CRUDFunctionAbstractions/CheckUser";
 function ContactsMenu() {
   const navigate = useNavigate();
   const [contactLoading, setContactLoading] = useState(true);
   const [requestLoading, setRequestLoading] = useState(true);
 
   const [nameListAfterSearch, updateList] = useState(null);
-
+  CheckUser();
   useEffect(() => {
     GetRequests(setRequestLoading);
     RefreshContacts(setContactLoading, updateList);

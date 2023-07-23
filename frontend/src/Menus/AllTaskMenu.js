@@ -9,11 +9,12 @@ import images from "../Assets/FinalBackground.png";
 import Background from "../CSSComponents/Background";
 import "../CSSComponents/container.css";
 import XButton from "../OtherComponents/XButton";
+import CheckUser from "../CRUDFunctionAbstractions/CheckUser";
 
 function AllTaskMenu() {
   const navigate = useNavigate();
   const user = useParams();
-
+  CheckUser();
   const [tasks, changeTasks] = useState(null);
   if (tasks != null) {
     tasks.sort((a, b) => a.Deadline > b.Deadline);

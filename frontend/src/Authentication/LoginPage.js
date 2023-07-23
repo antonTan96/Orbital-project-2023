@@ -9,9 +9,6 @@ function LoginPage({ set }) {
   const text = ["Log in to existing account", "No account? Register!"];
   const [buttonText, changeButton] = useState(text[0]);
   const components = [<RegisterContainer />, <LoginContainer />];
-  localStorage.removeItem("token");
-  localStorage.removeItem("Contacts");
-  localStorage.removeItem("Requests");
 
   function changeText(a) {
     console.log(a);
