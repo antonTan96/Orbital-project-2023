@@ -8,8 +8,8 @@ import NavigationBar from "../OtherComponents/NavigationBar";
 import images from "../Assets/FinalBackground.png";
 import Background from "../CSSComponents/Background";
 import UWUButton from "../CSSComponents/UWUButton";
-import SendTaskButton from "../OtherComponents/SendTaskButton";
-import RemoveFriendButton from "../OtherComponents/RemoveFriendButton";
+import SendTaskButton from "../CSSComponents/SendTaskButton";
+import RemoveFriendButton from "../CSSComponents/RemoveFriendButton";
 import "./../CSSComponents/container.css";
 function ContactsMenu() {
   const navigate = useNavigate();
