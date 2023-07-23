@@ -8,6 +8,7 @@ import ContactsMenu from "./Menus/ContactsMenu";
 import AddContactsMenu from "./Menus/AddContactsMenu";
 import RequestMenu from "./Menus/RequestMenu";
 import SendTaskMenu from "./Menus/SendTaskMenu";
+import AccountActivationPage from "./Authentication/AccountAcivationPage";
 
 export const routes = createBrowserRouter([
   {
@@ -42,5 +43,9 @@ export const routes = createBrowserRouter([
   {
     path: `/:user/Contacts/SendTask`,
     element: <SendTaskMenu />,
+  },
+  {
+    path: `/activate`,
+    element: <AccountActivationPage />,
   },
 ]);

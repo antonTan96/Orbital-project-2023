@@ -44,7 +44,9 @@ function RegisterContainer(set, pageChange) {
       console.log(response);
       if (response.status >= 200 && response.status < 300) {
         localStorage.setItem("token", response.data.Data);
-        navigate(`/${username}/Menu`, { state: { login: true } });
+        alert(response.data.Message);
+        submitButton.disabled = false;
+        switchButton.disabled = false;
       }
     } catch (e) {
       if (e.response) {
