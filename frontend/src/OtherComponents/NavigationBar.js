@@ -64,6 +64,9 @@ function NavigationBar(props) {
           className="content"
           onClick={() => {
             console.log("return to login page");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
             navigate("../");
           }}
         >
