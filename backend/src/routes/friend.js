@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const connection  = require("../connector");
-const { decrypt_data } = require("../data_processing");
+const connection  = require("../config/connector");
+const { decrypt_data } = require("../helpers/data_processing");
+const { ERRORS, DB_TABLES } = require('../config/constants');
 
 const table_name = "Friends";
 const status = {
@@ -48,11 +49,11 @@ router.get("/", async(req, res) => {
 });
 
 /**
- * @api {GET} /friend/request Get Friend Request
- * @apiName GetFriendRequest
+ * @api {GET} /friend/received Get Received Friend Request
+ * @apiName GetReceivedFriendRequest
  * @apiGroup Friend
  */
-router.get("/request", async(req, res) => {
+router.get("/receive", async(req, res) => {
     try {
         if (!("token" in req.headers)) {
             return res.status(401).json({"Message" : "Token not found!"});
@@ -65,7 +66,7 @@ router.get("/request", async(req, res) => {
             }
             const Username = decrypt_data(decoded["Data"]);
             const alias = "Username";
-            const query = `SELECT User1 AS ${alias} FROM ${table_name} WHERE User2 = ? AND Status = ?`
+            const query = `SELECT User1 AS ${alias} FROM ${table_name} WHERE User2 = BINARY ? AND Status = ?`
             connection.query(query, [Username, status.Pending], async(err, result) => {
                 if (err) {
                     console.error(err);
@@ -78,6 +79,37 @@ router.get("/request", async(req, res) => {
     } catch(err) {
         console.error(err);
         return res.status(500).json({"Message" : "Internal Server Error!"});
+    }
+});
+
+/**
+ * @api {GET} /friend/sent Get Sent Friend Request
+ */
+router.get("/sent", async(req, res) => {
+    try {
+        if (!("token") in req.headers) {
+            return res.status(401).json(ERRORS.NOT_FOUND("Token"));
+        }
+        const token = (req.headers)["token"];
+        jwt.verify(token, process.env.JWT_PRIVATE_KEY, async (err, decoded) => {
+            if (err) {
+                console.error(err);
+                return res.status(401).json(ERRORS.AUTH);
+            }
+            const Username = decrypt_data(decoded["Data"]);
+            const alias = "Username";
+            const query = `SELECT User2 AS ${alias} FROM ${DB_TABLES.friend} WHERE User1 = BINARY ? AND Status = ?`;
+            connection.query(query, [Username, status.Pending], async (err, result) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json(ERRORS.DB);
+                }
+                return res.status(200).json({"Data" : result});
+            });
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json(ERRORS.SERVER);
     }
 });
 
@@ -106,17 +138,41 @@ router.post("/send", async(req, res) => {
                 console.error(error);
                 return res.status(400).json({"Message" : error.details[0].message});
             }
-            const Username = decrypt_data(decoded["Data"]);
-            const query = `INSERT INTO ${table_name} (User1, User2, Status) VALUES (?, ?, ?)`;
-            connection.query(query, [Username, req.body["Username"], status.Pending], async(err, result) => {
+            const query = `SELECT Username FROM ${DB_TABLES.user} WHERE Username = ?`;
+            connection.query(query, req.body["Username"], async (err, result) => {
                 if (err) {
                     console.error(err);
-                    return res.status(500).json({"Message" : "Database Error!"});
+                    return res.status(500).json(ERRORS.DB);
                 }
-                return res.status(200).json({"Message" : "Friend request sent!"});
+                if (result.length == 0) {
+                    return res.status(400).json(ERRORS.NOT_FOUND(req.body["Username"]));
+                }
+                const Username = decrypt_data(decoded["Data"]);
+                const query = `SELECT IF(Status = "Pending", IF(User1 = ?, "Sent", "Received"), Status) AS Status FROM ${DB_TABLES.friend} WHERE (User1 = ? AND User2 = ?) OR (User1 = ? AND User2 = ?)`;
+                connection.query(query, [Username, Username, req.body["Username"], req.body["Username"], Username], async(err, result) => {
+                    if(err) {
+                        console.error(err);
+                        return res.status(500).json(ERRORS.DB);
+                    }
+                    if (result.length != 0) {
+                        const stat = result[0]["Status"];
+                        const message = stat == "Accepted" ? "Both of you are friends already!" 
+                                                           : stat == "Sent"
+                                                           ? "Friend request sent before!"
+                                                           : "Friend request still pending! Please check your received friend requests!";
+                        return res.status(400).json({"Message" : message});
+                    }
+                    const query = `INSERT INTO ${table_name} (User1, User2, Status) VALUES (?, ?, ?)`;
+                    connection.query(query, [Username, req.body["Username"], status.Pending], async(err, result) => {
+                        if (err) {
+                            console.error(err);
+                            return res.status(500).json({"Message" : "Database Error!"});
+                        }
+                        return res.status(200).json({"Message" : "Friend request sent!"});
+                    });
+                });
             });
         });
-        return res.status(200);
     } catch (error) {
         console.error(error);
         return res.status(500).json({"Message" : "Internal Server Error!"});
