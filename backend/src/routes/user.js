@@ -2,13 +2,14 @@ const router = require('express').Router();
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql2');
-const connection = require('../connector');
-const { decrypt_data, hash_password } = require('../data_processing');
+const connection = require('../config/connector');
+const { decrypt_data, hash_password } = require('../helpers/data_processing');
+const { DB_TABLES, ERRORS } = require('../config/constants');
 
 router.get("/", async (req, res) => {
     try {
         if (!("token" in req.headers)) {
-            return res.status(401).json({"Message" : "Token is not found!"});
+            return res.status(401).json(ERRORS.NOT_FOUND("Token"));
         }
         const inputs = req.headers;
         const token = inputs["token"];
@@ -18,15 +19,14 @@ router.get("/", async (req, res) => {
                 return res.status(401).json({"Message" : "Authentication Failed!"});
             }
             const Username = decrypt_data(decoded["Data"]);
-            const table_name = "Users";
-            const query = `SELECT Email FROM ${table_name} WHERE Username = BINARY ?`;
+            const query = `SELECT Email FROM ${DB_TABLES.user} WHERE Username = BINARY ?`;
             connection.query(query, [Username], async (error, result) => {
                 if (error) {
                     console.error(error);
-                    return res.status(500).json({"Message" : "Database Error!"});
+                    return res.status(500).json(ERRORS.DB);
                 }
                 if (result.length == 0) {
-                    return res.status(400).json({"Message" : "User not found!"});
+                    return res.status(400).json(ERRORS.NOT_FOUND("User"));
                 }
                 return res.status(200).json({"Email" : result[0]["Email"]});
             });
@@ -41,13 +41,13 @@ router.get("/", async (req, res) => {
 router.put("/update", async (req, res) => {
     try {
         if (!("token" in req.headers))
-            return res.status(401).json({"Message" : "Token not found!"});
+            return res.status(401).json(ERRORS.NOT_FOUND("Token"));
 
         const token = (req.headers)["token"];
         jwt.verify(token, process.env.JWT_PRIVATE_KEY, async (err, decoded) => {
             if (err) {
                 console.error(err);
-                return res.status(401).json({"Message" : "Authentication failed!"});
+                return res.status(401).json(ERRORS.AUTH);
             }
             const { error } = validate(req.body);
             if (error) {
@@ -56,15 +56,14 @@ router.put("/update", async (req, res) => {
             }
             const inputs = req.body;
             const Username = decrypt_data(decoded["Data"]);
-            const table_name = "Users";
-            const query = `SELECT Email, Password FROM ${table_name} WHERE Username = BINARY ?`
+            const query = `SELECT Email, Password FROM ${DB_TABLES.user} WHERE Username = BINARY ?`
             connection.query(query, [Username], async (error, result) => {
                 if (error) {
                     console.error(error);
-                    return res.status(500).json({"Message" : "Database Error!"});
+                    return res.status(500).json(ERRORS.DB);
                 }
                 if (result.length == 0) {
-                    return res.status(400).json({"Message" : "User not found!"});
+                    return res.status(400).json(ERRORS.NOT_FOUND("User"));
                 }
                 const Email = inputs["Email"] || result[0]["Email"]
                 let Password = undefined;
@@ -74,7 +73,7 @@ router.put("/update", async (req, res) => {
                 } else {
                     Password = await hash_password(Password);
                 }
-                const query = `UPDATE ${table_name} SET Email = ?, Password = ? WHERE Username = BINARY ?`;
+                const query = `UPDATE ${DB_TABLES.user} SET Email = ?, Password = ? WHERE Username = BINARY ?`;
                 connection.query(query, [Email, Password, Username], async (error, result) => {
                     if (error) {
                         console.error(error);
@@ -104,15 +103,24 @@ router.delete("/delete", async (req, res) => {
                 return res.status(401).json({"Message" : "Authentication Failed!"});
             }
             const Username = decrypt_data(decoded["Data"]);
-            const table_name = "Users"
-            const query = `DELETE FROM ${table_name} WHERE Username = BINARY ?`;
-            connection.query(query, [Username], async (error, result) => {
-                if (error) {
-                    console.error(error);
-                    return res.status(500).json({"Message" : "Database Error!"});
+            const query = `SELECT * FROM ${DB_TABLES.user} WHERE Username = BINARY ?`;
+            connection.query(query, [Username], async (err, result) => {
+                if (err) {
+                    return res.status(500).json(ERRORS.DB);
                 }
-                return res.status(200).json({"Message" : "Account deleted successfully!"});
+                if (result.length == 0) {
+                    return res.status(400).json(ERRORS.NOT_FOUND("User"));
+                }
+                const query = `DELETE FROM ${DB_TABLES.user} WHERE Username = BINARY ?`;
+                connection.query(query, [Username], async (error, result) => {
+                    if (error) {
+                        console.error(error);
+                        return res.status(500).json(ERRORS.DB);
+                    }
+                    return res.status(200).json({"Message" : "Account deleted successfully!"});
             })
+            });
+            
         });
         return res.status(200); // at least a response is return
     } catch (error) {
@@ -121,6 +129,9 @@ router.delete("/delete", async (req, res) => {
     }
 });
 
+/**
+ * Search users by given prefix username
+ */
 router.post("/search", async(req, res) => {
     try {
         if (!("token" in req.headers))
@@ -144,9 +155,18 @@ router.post("/search", async(req, res) => {
                 return res.status(400).json({"Message" : error.details[0].message});
             }
             const prefix = mysql.escape((req.body)["Prefix"]);
-            const table_name = "Users";
-            const query = `SELECT Username FROM ${table_name} WHERE BINARY Username LIKE ? ORDER BY Username ASC`;
-            connection.query(query, [`${prefix.slice(1, prefix.length - 1)}%`], (error, result) => {
+            const Username = decrypt_data(decoded["Data"]);
+            // const query = `SELECT ${DB_TABLES.user}.Username AS Users, ${DB_TABLES.friend}.Status AS Friend Status
+            //                 FROM ${DB_TABLES.user} LEFT JOIN ${DB_TABLES.friend} ON Users = ${DB_TABLES.friend}.User2
+            //                 WHERE BINARY Users LIKE ? AND ${DB_TABLES.friend}.user1 = ? ORDER BY Username ASC`;
+            const query = `SELECT DISTINCT ${DB_TABLES.user}.Username AS "Users", IF(${DB_TABLES.friend}.Status = "Pending",
+                            IF(${DB_TABLES.friend}.User1 = ?, "Sent", "Received"), IFNULL(${DB_TABLES.friend}.Status, "Nothing"))
+                            AS "Friend Status" FROM ${DB_TABLES.user} LEFT JOIN ${DB_TABLES.friend} ON
+                            (${DB_TABLES.user}.Username = BINARY ${DB_TABLES.friend}.User1 AND ${DB_TABLES.friend}.User2 = BINARY ?) OR
+                            (${DB_TABLES.user}.Username = BINARY ${DB_TABLES.friend}.User2 AND ${DB_TABLES.friend}.User1 = BINARY ?) WHERE
+                            BINARY ${DB_TABLES.user}.Username LIKE ? AND BINARY ${DB_TABLES.user}.Username != ? AND ${DB_TABLES.user}.Status = ?
+                            ORDER BY ${DB_TABLES.user}.Username`
+            connection.query(query, [Username, Username, Username, `${prefix.slice(1, prefix.length - 1)}%`, Username, "Activated"], (error, result) => {
                 if (error) {
                     console.error(error);
                     return res.status(500).json({"Message" : "Database Error!"});
