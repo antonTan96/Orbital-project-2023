@@ -29,7 +29,7 @@ Inspired by the meme of dads going to buy milk for an unspecified amount of time
 
 This app also aims to improve the collaboration experience between humans by the feature of sending tasks and providing a hopefully unique user experience.
 
-## User Stories
+## User Stories:
 * As a student who has missed the deadline of my assignment, I find it useful to have a to-do list that helps me remember my assignments.
 * As a web app developer, I need a to-do list to note down all the components needed to complete a project. 
 * As a group project leader, I need to make sure that members are aware of what they have to do to contribute to our project.
@@ -41,12 +41,13 @@ The web app provides an interface for people to list out their ongoing tasks as 
 * To-do list: Help remembering the tasks
 * Reminder: Remind you to do the tasks
 * Sending Tasks to contacts: Let people add tasks for you
-* Tech stack:
-    * Nodejs (JavaScript runtime)
-    * React, CSS (Frontend) 
-    * Express (Backend)
-    * Postman (Backend API Testing) 
-    * MySQL (Database) 
-    * Microsoft Azure (Hosting service provider) 
-    * Git, GitHub (Codebase)
-    * Figma (UI design)
+
+## Tech stack:
+* Nodejs (JavaScript runtime)
+* React, CSS (Frontend) 
+* Express (Backend)
+* Postman (Backend API Testing) 
+* MySQL (Database) 
+* Microsoft Azure (Hosting service provider) 
+* Git, GitHub (Codebase)
+* Figma (UI design)
