@@ -1,4 +1,5 @@
-Documentation for Finish Your Milk TM
+Documentation for Finish Your Milk™
+
 
 National University of Singapore (NUS) 
 
